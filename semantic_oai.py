@@ -39,10 +39,15 @@ def get_embedding(text: str) -> list[float]:
 def main():
     parser = argparse.ArgumentParser(description="Get embeddings from OpenAI API")
     parser.add_argument("--text", required=True, help="Text to embed")
+    parser.add_argument("--output", type=str, help="Output file to save the embedding")
     args = parser.parse_args()
 
     embedding = get_embedding(args.text)
-    print(json.dumps(embedding))
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(embedding, f)
+    else:
+        print(json.dumps(embedding))
 
 
 if __name__ == "__main__":
