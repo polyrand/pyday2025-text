@@ -2,6 +2,26 @@ import argparse
 import json
 import os
 import urllib.request
+from pathlib import Path
+
+
+def get_openai_key() -> str:
+    """
+    Retrieve the OpenAI API key from environment or file.
+
+    Returns:
+        The OpenAI API key as a string.
+    """
+
+    api_key_env = os.getenv("OPENAI_API_KEY")
+    if api_key_env:
+        return api_key_env
+    api_key_file = Path.cwd() / ".openai_api_key"
+    if api_key_file.exists():
+        file_contents = api_key_file.read_text().strip()
+        if file_contents:
+            return file_contents
+    raise ValueError("OpenAI API key not found in environment or .openai_api_key")
 
 
 def get_embedding(text: str) -> list[float]:
@@ -18,9 +38,7 @@ def get_embedding(text: str) -> list[float]:
     # This is the only supported model. The API key is limited and won't allow
     # other embedding models except this one.
     EMBEDDING_MODEL = "text-embedding-3-small"
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable is not set")
+    api_key = get_openai_key()
 
     url = "https://api.openai.com/v1/embeddings"
 
