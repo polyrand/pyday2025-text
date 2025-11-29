@@ -110,7 +110,7 @@ def keyword_search_from_token_list(token_index, keywords: list[str]) -> list[int
 
 def build_inverted_index(token_index: dict[int, list[str]]) -> dict[str, list[int]]:
     """
-    TODO: Create an inverted index from the token index.
+    Create an inverted index from the token index.
     Build a mapping:
         token -> [list, of, document, ids, containing, the, token]
 
@@ -137,6 +137,18 @@ def build_inverted_index(token_index: dict[int, list[str]]) -> dict[str, list[in
     }
 
     return final_inverted_index
+
+
+def keyword_search_from_inverted_index(
+    inverted_index, keywords: list[str]
+) -> list[int]:
+    """
+    Implement keyword search using the token index.
+    """
+
+    matching_doc_ids: set[int] = set()
+
+    return list(matching_doc_ids)
 
 
 def main() -> int:
