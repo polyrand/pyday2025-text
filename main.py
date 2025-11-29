@@ -182,7 +182,7 @@ def main() -> int:
     start_2 = time.perf_counter()
 
     output_invertedindex = keyword_search_from_inverted_index(
-        inverted_index, ["machines", "learning"]
+        inverted_index, ["machine", "learning"]
     )
 
     end_2 = time.perf_counter()
