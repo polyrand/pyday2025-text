@@ -34,6 +34,21 @@ def parse_args() -> argparse.Namespace:
 # TASK 5: Implement semantic search using embeddings
 
 
+def keyword_search(data, keywords: list[str]) -> dict[int, str]:
+    """
+    TODO
+    """
+
+    matching_doc_ids = set()
+
+    for document_id, content in data.items():
+        for keyword in keywords:
+            if keyword in content:
+                matching_doc_ids.add(document_id)
+
+    return {doc_id: data[doc_id] for doc_id in matching_doc_ids}
+
+
 def main() -> int:
     args = parse_args()
     data = load_data(args.data_folder)
