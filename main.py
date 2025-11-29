@@ -2,6 +2,7 @@ import argparse
 import string
 import sys
 import textwrap
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -121,7 +122,20 @@ def build_inverted_index(token_index: dict[int, list[str]]) -> dict[str, list[in
         }
     """
 
-    return {}
+    inverted_index: dict[str, set[int]] = {}
+
+    for document_id, token_list in token_index.items():
+        for token in token_list:
+            if token not in inverted_index:
+                inverted_index[token] = set()
+            else:
+                inverted_index[token].add(document_id)
+
+    final_inverted_index = {
+        token: list(doc_id_set) for token, doc_id_set in inverted_index.items()
+    }
+
+    return final_inverted_index
 
 
 def main() -> int:
