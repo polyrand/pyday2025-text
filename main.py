@@ -107,15 +107,31 @@ def keyword_search_from_token_list(token_index, keywords: list[str]) -> list[int
     return list(matching_doc_ids)
 
 
+def build_inverted_index(token_index: dict[int, list[str]]) -> dict[str, list[int]]:
+    """
+    TODO: Create an inverted index from the token index.
+    Build a mapping:
+        token -> [list, of, document, ids, containing, the, token]
+
+    Example:
+        {
+            "the": [1, 2, 5, 10],
+            "cat": [2, 3, 7],
+            ...
+        }
+    """
+
+    return {}
+
+
 def main() -> int:
     args = parse_args()
     data = load_data(args.data_folder)
+    token_index = build_token_index(data)
 
-    output = keyword_search_from_token_list(data, ["machine", "learning"])
+    output = keyword_search_from_token_list(token_index, ["machines", "learning"])
     for document_id in output:
         print(f"{document_id} | {textwrap.shorten(data[document_id], width=400)}")
-
-    # output = build_token_index(data)
 
     return 0
 
