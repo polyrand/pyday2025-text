@@ -91,7 +91,7 @@ def keyword_search(data, keywords: list[str]) -> dict[int, str]:
 
 def keyword_search_from_token_list(token_index, keywords: list[str]) -> list[int]:
     """
-    TODO: Implement keyword search using the token index.
+    Implement keyword search using the token index.
     """
 
     matching_doc_ids = set()
@@ -111,12 +111,12 @@ def main() -> int:
     args = parse_args()
     data = load_data(args.data_folder)
 
-    # output = keyword_search(data, ["machine", "learning"])
-    output = build_token_index(data)
+    output = keyword_search_from_token_list(data, ["machine", "learning"])
+    for document_id in output:
+        print(f"{document_id} | {textwrap.shorten(data[document_id], width=400)}")
 
-    for id, token_list in output.items():
-        # print(f"{id} | {textwrap.shorten(content, width=400)}")
-        print(f"{id} | {token_list[:40]}")
+    # output = build_token_index(data)
+
     return 0
 
 
