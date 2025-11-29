@@ -2,6 +2,7 @@ import argparse
 import string
 import sys
 import textwrap
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -143,12 +144,21 @@ def keyword_search_from_inverted_index(
     inverted_index, keywords: list[str]
 ) -> list[int]:
     """
-    Implement keyword search using the token index.
+    TODO: Implement keyword search using the token index.
     """
 
-    matching_doc_ids: set[int] = set()
+    overlapping_doc_ids: set[int] = set()
 
-    return list(matching_doc_ids)
+    for keyword in keywords:
+        if keyword not in inverted_index:
+            continue
+        matching_doc_ids = inverted_index[keyword]
+        if not overlapping_doc_ids:
+            overlapping_doc_ids = set(matching_doc_ids)
+        else:
+            overlapping_doc_ids = overlapping_doc_ids.intersection(matching_doc_ids)
+
+    return list(overlapping_doc_ids)
 
 
 def main() -> int:
@@ -157,12 +167,32 @@ def main() -> int:
     token_index = build_token_index(data)
     inverted_index = build_inverted_index(token_index)
 
-    for token, doc_ids in inverted_index.items():
-        print(f"{token} -> {doc_ids[:10]}")
+    # for token, doc_ids in inverted_index.items():
+    #     print(f"{token} -> {doc_ids[:10]}")
 
-    # output = keyword_search_from_token_list(token_index, ["machines", "learning"])
-    # for document_id in output:
-    #     print(f"{document_id} | {textwrap.shorten(data[document_id], width=400)}")
+    start_1 = time.perf_counter()
+
+    output_tokens = keyword_search_from_token_list(
+        token_index, ["machines", "learning"]
+    )
+
+    end_1 = time.perf_counter()
+    total_op1 = end_1 - start_1
+
+    start_2 = time.perf_counter()
+
+    output_invertedindex = keyword_search_from_inverted_index(
+        inverted_index, ["machines", "learning"]
+    )
+
+    end_2 = time.perf_counter()
+    total_op2 = end_2 - start_2
+
+    print(f"Operation using token list took: {total_op1:.6f} seconds")
+    print(f"Operation using inverted index took: {total_op2:.6f} seconds")
+
+    for document_id in output_invertedindex:
+        print(f"{document_id} | {textwrap.shorten(data[document_id], width=400)}")
 
     return 0
 
