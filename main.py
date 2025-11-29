@@ -143,10 +143,14 @@ def main() -> int:
     args = parse_args()
     data = load_data(args.data_folder)
     token_index = build_token_index(data)
+    inverted_index = build_inverted_index(token_index)
 
-    output = keyword_search_from_token_list(token_index, ["machines", "learning"])
-    for document_id in output:
-        print(f"{document_id} | {textwrap.shorten(data[document_id], width=400)}")
+    for token, doc_ids in inverted_index.items():
+        print(f"{token} -> {doc_ids[:10]}")
+
+    # output = keyword_search_from_token_list(token_index, ["machines", "learning"])
+    # for document_id in output:
+    #     print(f"{document_id} | {textwrap.shorten(data[document_id], width=400)}")
 
     return 0
 
