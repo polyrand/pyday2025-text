@@ -54,6 +54,14 @@ def tokenize(text: str) -> list[str]:
     return final_tokens
 
 
+def build_token_index(data: dict[int, str]) -> dict[int, list[str]]:
+    """
+    TODO: Build a token index for the given data.
+    Return a mapping:
+        document_id -> ["list", "of", "tokens", "in", "the", "document"]
+    """
+
+
 def keyword_search(data, keywords: list[str]) -> dict[int, str]:
     """
     TASK: Make the function use "AND" logic instead of "OR" logic.
