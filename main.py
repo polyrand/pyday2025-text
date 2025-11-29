@@ -128,6 +128,7 @@ def build_inverted_index(token_index: dict[int, list[str]]) -> dict[str, list[in
         for token in token_list:
             if token not in inverted_index:
                 inverted_index[token] = set()
+                inverted_index[token].add(document_id)
             else:
                 inverted_index[token].add(document_id)
 
