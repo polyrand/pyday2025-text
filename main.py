@@ -53,8 +53,10 @@ def main() -> int:
     args = parse_args()
     data = load_data(args.data_folder)
 
-    for id, content in data.items():
-        print(f"{id} | {textwrap.shorten(content, width=60)}")
+    results = keyword_search(data, ["machine", "learning"])
+
+    for id, content in results.items():
+        print(f"{id} | {textwrap.shorten(content, width=400)}")
     return 0
 
 
