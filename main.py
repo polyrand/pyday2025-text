@@ -89,7 +89,7 @@ def keyword_search(data, keywords: list[str]) -> dict[int, str]:
     return {doc_id: data[doc_id] for doc_id in matching_doc_ids}
 
 
-def keyword_search_from_token_list(token_index, keywords: list[str]) -> dict[int, str]:
+def keyword_search_from_token_list(token_index, keywords: list[str]) -> list[int]:
     """
     TODO: Implement keyword search using the token index.
     """
@@ -101,8 +101,10 @@ def keyword_search_from_token_list(token_index, keywords: list[str]) -> dict[int
         for keyword in keywords:
             if keyword not in token_list:
                 all_keywords_found = False
+        if all_keywords_found:
+            matching_doc_ids.add(document_id)
 
-    return {doc_id: data[doc_id] for doc_id in matching_doc_ids}
+    return list(matching_doc_ids)
 
 
 def main() -> int:
