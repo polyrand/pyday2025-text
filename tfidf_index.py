@@ -7,7 +7,6 @@ for building a search index from text documents.
 
 import json
 import math
-import sys
 from collections import Counter
 from pathlib import Path
 
@@ -183,7 +182,8 @@ def build_tfidf_index(data_folder: Path) -> dict:
     # We will use this to calculate TF and DF
     # =========================================================================
     tokenized_docs: dict[int, list[str]] = {}
-    # TODO: TASK 2
+    for doc_id, path in docid2path.items():
+        tokenized_docs[doc_id] = tokenize_file(path)
 
     # =========================================================================
     # STEP 3: Calculate Document Frequency (DF)
@@ -191,7 +191,10 @@ def build_tfidf_index(data_folder: Path) -> dict:
     #     term -> number of documents containing the term
     # =========================================================================
     document_frequency: Counter[str] = Counter()
-    # TODO: TASK 3
+    for _doc_id, tokens in tokenized_docs.items():
+        unique_terms = set(tokens)
+        for term in unique_terms:
+            document_frequency[term] += 1
 
     # =========================================================================
     # STEP 4: Calculate IDF for each term
@@ -219,8 +222,10 @@ def build_tfidf_index(data_folder: Path) -> dict:
     #    Log follows the Weber-Fechner law: humans perceive differences
     #    on a logarithmic scale (like decibels or earthquake magnitudes).
     # =========================================================================
-    idf: dict[str, float] = {}
-    # TODO: TASK 4
+    idf = {}
+    for term, df in document_frequency.items():
+        # IDF formula with smoothing: log(N / (df + 1)) + 1
+        idf[term] = math.log(NUMBER_OF_DOCUMENTS / (df + 1)) + 1
 
     # =========================================================================
     # STEP 5: Calculate TF-IDF for each term in each document
@@ -231,7 +236,11 @@ def build_tfidf_index(data_folder: Path) -> dict:
         total_terms = len(tokens)
 
         tfidf[doc_id] = {}
-        # TODO: TASK 5
+        # store scores of each term
+        for term, count in term_counts.items():
+            term_frequency = count / total_terms  # TF
+            inverse_document_frequency = idf[term]  # IDF
+            tfidf[doc_id][term] = term_frequency * inverse_document_frequency
 
     # =========================================================================
     # Return the complete index
@@ -244,7 +253,7 @@ def build_tfidf_index(data_folder: Path) -> dict:
     }
 
 
-def search(index: dict, *, terms: list[str]) -> list[tuple[int, float]]:
+def search(index: dict, terms: list[str]) -> list[tuple[int, float]]:
     """
     Search for documents containing multiple terms, ranked by summed TF-IDF scores.
 
@@ -279,7 +288,16 @@ def search(index: dict, *, terms: list[str]) -> list[tuple[int, float]]:
     # Sum scores for each term in each document
     for doc_id, doc_tfidf in index["tfidf"].items():
         total_score = 0.0
-        # TODO: TASK 7
+        for term in terms:
+            # weight = 1.0
+            # if term_has_weight(term):
+            #     weight = get_term_weight(term)
+            if term in doc_tfidf:
+                score = doc_tfidf[term]
+                # score *= weight
+                total_score += score
+        if total_score > 0:
+            doc_scores[doc_id] = total_score
 
     # Sort by score descending (most relevant first)
     results = sorted(doc_scores.items(), key=lambda x: x[1], reverse=True)
@@ -329,11 +347,22 @@ Examples:
         parser.error("--query requires --index-file")
 
     if args.build:
-        data_path = ...
+        data_path = Path(__file__).parent / "data"
         index = build_tfidf_index(data_path)
-        # TODO: TASK 6
-
-        sys.exit(0)
+        # Save index to JSON file
+        output_path = args.build
+        # Convert Path objects to strings for JSON serialization
+        serializable_index = {
+            "docid2path": {k: str(v) for k, v in index["docid2path"].items()},
+            "idf": index["idf"],
+            "tfidf": dict(index["tfidf"]),
+            "doc_count": index["doc_count"],
+        }
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(serializable_index, f, indent=2)
+        print(f"Index saved to {output_path}")
+        print(f"Indexed {index['doc_count']} documents")
+        print(f"Vocabulary size: {len(index['idf'])} terms")
 
     if args.query:
         # Load index from JSON file
